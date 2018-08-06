@@ -1,7 +1,8 @@
 # Pneuma 
-> The vital spirit, soul, or creative force of a person.
-"In Stoic philosophy, the pneuma penetrates all things, holding things together."
-[Wikipedia](https://en.wikipedia.org/wiki/Pneuma)
+
+> The vital spirit, soul, or creative force of a person.<br>
+> "In Stoic philosophy, the pneuma penetrates all things, holding things together."<br>
+> [Wikipedia](https://en.wikipedia.org/wiki/Pneuma)
 
 Basically, yet another server framework, that provides middleware architecture and possibility to write MVC backend applications.
 Fast and very simple. Kickoff in a minute. If you used expressjs before then this framework will not be hard for you to understand.
