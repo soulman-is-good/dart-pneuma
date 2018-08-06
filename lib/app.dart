@@ -86,9 +86,5 @@ class Pneuma {
     } catch(err) {
       res.status(500).send(err.toString());
     }
-    
-    if (!resSent && !res.headersSent) {
-      res.status(405).send('Request could not be processed');
-    }
   }
 }

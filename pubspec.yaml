@@ -1,5 +1,5 @@
 name: pneuma
-version: 0.1.0
+version: "0.2.0-dev"
 description: Web framework with middleware
 author: Maxim Savin <i@soulman.kz>
 homepage: https://github.com/soulman-is-good/dart-pneuma
