@@ -36,12 +36,35 @@ class CustomMiddleware extends Middleware {
   }
 }
 
+class TestController extends Controller {
+  TestController() {
+    routeMap = {
+      new RegExp(r'^\/controller\/timeout$'): timeoutAction,
+      new RegExp(r'^\/controller\/error$'): errorAction,
+      new RegExp(r'^\/controller'): indexAction,
+    };
+  }
+  
+  void indexAction(Request req, Response res) {
+    res.send('Index Page');
+  }
+  
+  Future timeoutAction(Request req, Response res) async {
+    await new Future.delayed(new Duration(seconds: 10));
+  }
+  
+  void errorAction(Request req, Response res) {
+    throw new Exception('Oops controller');
+  }
+}
+
 main() async {
   Pneuma srv = new Pneuma();
 
   srv
     ..use(new LogMiddleware())
     ..use(new CustomMiddleware())
+    ..use(new TestController())
     ..get('/new', (Request req, Response res, next) {
       res.send('Welcome');
     })
@@ -50,17 +73,6 @@ main() async {
         print(data.body);
         res.send('Welcome post');
       });
-    })
-    ..match("/test", (req, res, next) async {
-      var body = await req.body;
-
-      res.json(body.body);
-    })
-    ..match(new RegExp(r'.*'), (req, res, next) {
-      res
-        ..statusCode = 404
-        ..write('Not Found')
-        ..close();
     });
 
   srv.start();

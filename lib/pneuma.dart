@@ -6,3 +6,4 @@ export 'log.dart';
 export 'request.dart';
 export 'response.dart';
 export 'middleware.dart';
+export 'controller.dart';
