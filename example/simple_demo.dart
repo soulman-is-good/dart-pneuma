@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:pneuma/pneuma.dart';
 
 class LogMiddleware extends Middleware {

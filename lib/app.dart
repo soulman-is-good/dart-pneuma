@@ -27,6 +27,12 @@ class Pneuma {
     return this;
   }
 
+  Pneuma useAll(List<Middleware> middlewares) {
+    _middlewares.addAll(middlewares);
+
+    return this;
+  }
+
   Pneuma match(
     dynamic/*RegExp|String*/ path,
     dynamic/*Middleware|MiddlewareHandler*/ handler,
