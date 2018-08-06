@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:pneuma/pneuma.dart';
 
 class ConditionalMiddleware extends Middleware {
@@ -9,22 +10,29 @@ class ConditionalMiddleware extends Middleware {
 
   @override
   Future<Middleware> run(Request req, Response res) async {
-    Middleware middleware = this.next;
+    Middleware middleware;
 
     if (_condition.hasMatch(req.path) && (_method == null || req.method == _method)) {
       if (_handler is Middleware) {
-        await _handler.run(req, res);
+        middleware = await _handler.run(req, res);
       } else if (_handler is MiddlewareHandler) {
         StreamController controller = new StreamController();
 
-        _handler(req, res, ([Exception error = null]) {
-          controller.sink.add(error);
+        _handler(req, res, ([Exception error]) {
+          if (err == null) {
+            controller.sink.add(this.next);
+          } else {
+            controller.sink.addError(error);
+          }
           controller.sink.close();
         });
+
         await controller.stream.first;
       } else {
         throw new Exception('Handler is not proper middleware on ${_condition.toString()}');
       }
+    } else {
+      middleware = this.next;
     }
 
     return middleware;

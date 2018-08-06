@@ -2,6 +2,23 @@ import 'dart:async';
 import 'dart:io';
 import 'package:pneuma/pneuma.dart';
 
+class LogMiddleware extends Middleware {
+  @override
+  Future<Middleware> run(Request req, Response res) {
+    DateTime start = new DateTime.now();
+    
+    res.done.then((_res) {
+      DateTime sent = new DateTime.now();
+      String stamp = sent.toIso8601String();
+      double timeTaken = (sent.millisecondsSinceEpoch - start.millisecondsSinceEpoch) / 1000;
+
+      print('[$stamp]: ${req.method.name} ${_res.statusCode} ${req.uri.toString()} took ${timeTaken} sec.');
+    });
+
+    return new Future.value(this.next);
+  }
+}
+
 class CustomMiddleware extends Middleware {
   @override
   Future<Middleware> run(Request req, Response res) async {
@@ -9,18 +26,21 @@ class CustomMiddleware extends Middleware {
       await new Future.delayed(new Duration(seconds: 1));
 
       return this.next;
+    } else if (req.path == '/error') {
+      throw new Exception('CustomError');
+    } else if (req.path == '/timeout') {
+      return new Future.delayed(new Duration(seconds: 10));
     }
-    res.send('end');
+
+    return this.next;
   }
 }
 
 main() async {
-  int port = int.parse(Platform.environment['PORT'], onError: () => 8080);
-  String host = Platform.environment['IP'] ?? '127.0.0.1';
-  
   Pneuma srv = new Pneuma();
 
   srv
+    ..use(new LogMiddleware())
     ..use(new CustomMiddleware())
     ..get('/new', (Request req, Response res, next) {
       res.send('Welcome');
@@ -42,5 +62,6 @@ main() async {
         ..write('Not Found')
         ..close();
     });
-  srv.start(port: port, host: host);
+
+  srv.start();
 }

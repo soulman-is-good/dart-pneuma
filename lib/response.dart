@@ -41,12 +41,16 @@ class Response {
 
   Response status(int code) {
     statusCode = code;
+
     return this;
   }
+
   Future send(String message) {
     write(message);
+
     return close();
   }
+
   Future json(Object json) {
     this
       ..headers.add("Content-Type", "application/json")

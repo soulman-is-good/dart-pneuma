@@ -4,16 +4,21 @@ import 'dart:collection';
 import 'dart:io';
 import 'dart:async';
 import 'package:pneuma/pneuma.dart';
+import 'package:pneuma/middlewares/conditional_middleware.dart';
+
+const REQUEST_TIMEOUT = 5;
 
 class Pneuma {
-  int port;
-  String host;
+  final int port;
+  final String host;
   LinkedList<Middleware> _middlewares;
   List<MiddlewareHandler> _handlers;
+  Duration requestTimeoutDuration = new Duration(seconds: REQUEST_TIMEOUT);
 
-  Pneuma({String host: '127.0.0.1', int port: 8080}) {
-    this.port = port;
-    this.host = host;
+  Pneuma({String host, int port}):
+    this.host = host ?? Platform.environment['IP'],
+    this.port = port ?? int.parse(Platform.environment['PORT'], onError: () => 8080)
+  {
     _handlers = new List();
     _middlewares = new LinkedList<Middleware>();
   }
@@ -24,22 +29,18 @@ class Pneuma {
     return this;
   }
 
-  Pneuma match(dynamic/*RegExp|String*/ path, MiddlewareHandler handler, {RequestMethod method}) {
-    RegExp url = path is RegExp ? path : new RegExp("^" + path);
+  Pneuma match(
+    dynamic/*RegExp|String*/ path,
+    dynamic/*Middleware|MiddlewareHandler*/ handler,
+    {RequestMethod method}
+  ) {
+    RegExp condition = path is RegExp ? path : new RegExp("^" + path);
 
-    _handlers.add((req, res, next) {
-      try {
-        if (url.hasMatch(req.uri.toString()) && (method == null || req.method == method)) {
-          handler(req, res, next);
-        } else {
-          next();
-        }
-      } catch (e) {
-        // TODO: error handler
-        print(e);
-        res.status(500).send(e.toString());
-      }
-    });
+    if (handler is! Middleware && handler is! MiddlewareHandler) {
+      throw new Exception('Handler should be of type Middleware or MiddlewareHandler');
+    }
+    
+    _middlewares.add(new ConditionalMiddleware(condition, method, handler));
 
     return this;
   }
@@ -50,9 +51,7 @@ class Pneuma {
   Pneuma delete(dynamic path, MiddlewareHandler handler) => match(path, handler, method: RequestMethod.DELETE);
   Pneuma patch(dynamic path, MiddlewareHandler handler) => match(path, handler, method: RequestMethod.PATCH);
 
-  Future start({String host: '127.0.0.1', int port: 8080}) async {
-    this.port = port;
-    this.host = host;
+  Future start() async {
     HttpServer server = await HttpServer.bind(this.host, this.port);
 
     print("Bound to ${this.host}:${this.port}");
@@ -63,20 +62,33 @@ class Pneuma {
 
   Future _handler(HttpRequest request) async {
     int len = _handlers.length;
-    Request req = new Request(request);
+    bool resSent = false;
+    Request req = new Request(request, this);
     Response res = new Response(request.response);
-    void next(int i) {
-      if (i < len) {
-        // TODO: Catch errors and handle with error handler
-        _handlers[i](req, res, () {
-          next(i + 1);
-        });
-      }
-    }
+    
+    res.done.then((_) {
+      resSent = true;
+    });
+
     Middleware middleware = _middlewares.first;
 
-    while ((middleware = await middleware.run(req, res)) is Middleware);
-
-    next(0);
+    try {
+      while (middleware != null) {
+        middleware = await middleware.run(req, res).timeout(requestTimeoutDuration, onTimeout: () {
+          if (!resSent) {
+            throw new TimeoutException('Request timeout');
+          }
+        });
+      }
+    } on TimeoutException catch(err) {
+      // TODO: Custom handler
+      res.status(504).send(err.message);
+    } catch(err) {
+      res.status(500).send(err.toString());
+    }
+    
+    if (!resSent && !res.headersSent) {
+      res.status(405).send('Request could not be processed');
+    }
   }
 }

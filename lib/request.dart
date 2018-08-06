@@ -2,14 +2,16 @@ library pneuma.request;
 
 import 'dart:async';
 import 'dart:io';
+import 'package:pneuma/app.dart';
 import 'package:pneuma/body.dart';
 import 'package:pneuma/types.dart';
 
 class Request {
   final HttpRequest _req;
   final Body _body;
+  final Pneuma app;
 
-  Request(this._req): _body = new Body(_req);
+  Request(this._req, this.app): _body = new Body(_req);
 
   Uri get uri => _req.uri;
   Map<String, String> get query => _req.uri.queryParameters;

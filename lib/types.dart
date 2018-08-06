@@ -3,7 +3,7 @@ library pneuma.types;
 import 'request.dart';
 import 'response.dart';
 
-typedef void WaterfallHandler([Exception error = null]);
+typedef void WaterfallHandler([Exception error]);
 typedef void MiddlewareHandler(Request req, Response res, WaterfallHandler next);
 
 class RequestMethod {
@@ -18,7 +18,6 @@ class RequestMethod {
   static RequestMethod OPTIONS = const RequestMethod('OPTIONS');
   static RequestMethod CONNECT = const RequestMethod('CONNECT');
   static RequestMethod TRACE = const RequestMethod('TRACE');
-  static RequestMethod ALL = const RequestMethod('ALL');
 
   const RequestMethod(this.name);
 
