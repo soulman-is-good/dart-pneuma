@@ -15,7 +15,7 @@ class Pneuma {
   Duration requestTimeoutDuration = new Duration(seconds: DEFAULT_REQUEST_TIMEOUT);
 
   Pneuma({String host, int port}):
-    this.host = host ?? Platform.environment['IP'],
+    this.host = host ?? Platform.environment['IP'] ?? '127.0.0.1',
     this.port = port ?? int.parse(Platform.environment['PORT'] ?? '8080', onError: (src) => 8080)
   {
     _middlewares = new LinkedList<Middleware>();
