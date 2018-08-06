@@ -45,7 +45,11 @@ class Response {
     return this;
   }
 
-  Future send(String message) {
+  Future send(String message, {ContentType contentType}) {
+    headers.set(
+      HttpHeaders.CONTENT_TYPE,
+      (contentType ?? ContentType.TEXT).toString()
+    );
     write(message);
 
     return close();
@@ -53,7 +57,7 @@ class Response {
 
   Future json(Object json) {
     this
-      ..headers.add("Content-Type", "application/json")
+      ..headers.set(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
       ..write(JSON.encode(json));
     return close();
   }

@@ -17,6 +17,7 @@ class Request {
   Map<String, String> get query => _req.uri.queryParameters;
   String get path => _req.uri.path;
   RequestMethod get method => RequestMethod.values[_req.method];
+  Future<WebSocket> upgrade() => WebSocketTransformer.upgrade(_req);
 
   Future<Body> get body async {
     await _body.processRequest();
