@@ -1,4 +1,7 @@
 name: pneuma
-version: 0.0.1
+version: 0.0.3
 description: Web framework with middleware
 author: Maxim Savin <i@soulman.kz>
+homepage: https://github.com/soulman-is-good/dart-pneuma
+dependencies:
+  http_server: any
