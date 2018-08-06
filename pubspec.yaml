@@ -4,4 +4,4 @@ description: Web framework with middleware
 author: Maxim Savin <i@soulman.kz>
 homepage: https://github.com/soulman-is-good/dart-pneuma
 dependencies:
-  http_server: any
+  http_server: 0.9.6
