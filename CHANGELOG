@@ -1,0 +1,27 @@
+# Changelog
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
+and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [0.1.0] - 2018-08-06
+### Added
+- Middleware as an interface
+- Controller to work in MVC kind of manner
+- example dir with example
+
+### Changed
+- Future based middleware chain
+
+### Removed
+- Custom events class
+- waterfall recurcive middleware handling
+- Log to be a separate middleware
+
+## [0.0.3] - 2015-08-16
+### Added
+- Initial structure
+- Event based controllers concept
+- MiddlewareHandler through a waterfall recurcive stack
