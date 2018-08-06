@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:pneuma/pneuma.dart';
 
 class CustomMiddleware extends Middleware {
@@ -14,6 +15,9 @@ class CustomMiddleware extends Middleware {
 }
 
 main() async {
+  int port = int.parse(Platform.environment['PORT'], onError: () => 8080);
+  String host = Platform.environment['IP'] ?? '127.0.0.1';
+  
   Pneuma srv = new Pneuma();
 
   srv
@@ -38,5 +42,5 @@ main() async {
         ..write('Not Found')
         ..close();
     });
-  srv.start(port: 9090);
+  srv.start(port: port, host: host);
 }

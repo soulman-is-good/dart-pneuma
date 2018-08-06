@@ -3,7 +3,8 @@ library pneuma.types;
 import 'request.dart';
 import 'response.dart';
 
-typedef void MiddlewareHandler(Request req, Response res, Function next);
+typedef void WaterfallHandler([Exception error = null]);
+typedef void MiddlewareHandler(Request req, Response res, WaterfallHandler next);
 
 class RequestMethod {
   final String name;
