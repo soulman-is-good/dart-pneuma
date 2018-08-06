@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:pneuma/pneuma.dart';
 
 class Controller extends Middleware {
-  Map<RegExp, Invocation> routeMap;
+  Map<RegExp, Function> routeMap;
 
   @override
   Future<Middleware> run(Request req, Response res) async {
@@ -16,7 +16,9 @@ class Controller extends Middleware {
     for (RegExp route in routes) {
       if (route.hasMatch(url)) {
         hasMatch = true;
-        await routeMap[route](req, res);
+        Function action = routeMap[route];
+
+        await action(req, res);
         break;
       }
     }
@@ -24,5 +26,6 @@ class Controller extends Middleware {
     if (!hasMatch) {
       return this.next;
     }
+    return null;
   }
 }

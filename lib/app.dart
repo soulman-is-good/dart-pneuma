@@ -6,25 +6,29 @@ import 'dart:async';
 import 'package:pneuma/pneuma.dart';
 import 'package:pneuma/middlewares/conditional_middleware.dart';
 
-const REQUEST_TIMEOUT = 5;
+const DEFAULT_REQUEST_TIMEOUT = 60;
 
 class Pneuma {
   final int port;
   final String host;
   LinkedList<Middleware> _middlewares;
-  List<MiddlewareHandler> _handlers;
-  Duration requestTimeoutDuration = new Duration(seconds: REQUEST_TIMEOUT);
+  Duration requestTimeoutDuration = new Duration(seconds: DEFAULT_REQUEST_TIMEOUT);
 
   Pneuma({String host, int port}):
     this.host = host ?? Platform.environment['IP'],
-    this.port = port ?? int.parse(Platform.environment['PORT'], onError: () => 8080)
+    this.port = port ?? int.parse(Platform.environment['PORT'] ?? '8080', onError: (src) => 8080)
   {
-    _handlers = new List();
     _middlewares = new LinkedList<Middleware>();
   }
 
   Pneuma use(Middleware middleware) {
     _middlewares.add(middleware);
+
+    return this;
+  }
+
+  Pneuma useAll(List<Middleware> middlewares) {
+    _middlewares.addAll(middlewares);
 
     return this;
   }
@@ -61,7 +65,6 @@ class Pneuma {
   }
 
   Future _handler(HttpRequest request) async {
-    int len = _handlers.length;
     bool resSent = false;
     Request req = new Request(request, this);
     Response res = new Response(request.response);
