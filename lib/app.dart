@@ -16,7 +16,7 @@ class Pneuma {
 
   Pneuma({String host, int port}):
     this.host = host ?? Platform.environment['IP'],
-    this.port = port ?? int.parse(Platform.environment['PORT'], onError: (src) => 8080)
+    this.port = port ?? int.parse(Platform.environment['PORT'] ?? '8080', onError: (src) => 8080)
   {
     _middlewares = new LinkedList<Middleware>();
   }
