@@ -23,4 +23,10 @@ class Request {
 
     return _body;
   }
+
+  bool get isGet => method == RequestMethod.GET;
+  bool get isPost => method == RequestMethod.POST;
+  bool get isPut => method == RequestMethod.PUT;
+  bool get isDelete => method == RequestMethod.DELETE;
+  bool get isPatch => method == RequestMethod.PATCH;
 }
