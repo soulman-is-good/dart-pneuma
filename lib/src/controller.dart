@@ -1,5 +1,10 @@
+// Copyright (c) 2018, Maxim Savin
+// for details. All rights reserved. Use of this source code is governed by a
+// MIT license that can be found in the LICENSE file.
+
 import 'dart:async';
-import 'package:pneuma/pneuma.dart';
+
+import 'middleware.dart';
 
 class Controller extends Middleware {
   Map<RegExp, Function> routeMap;

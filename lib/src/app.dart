@@ -1,10 +1,16 @@
+// Copyright (c) 2018, Maxim Savin
+// for details. All rights reserved. Use of this source code is governed by a
+// MIT license that can be found in the LICENSE file.
+
 library pneuma.app;
 
 import 'dart:collection';
 import 'dart:io';
 import 'dart:async';
-import 'package:pneuma/pneuma.dart';
-import 'package:pneuma/middlewares/conditional_middleware.dart';
+
+import 'middleware/conditional_middleware.dart';
+import 'middleware.dart';
+import 'types.dart';
 
 const DEFAULT_REQUEST_TIMEOUT = 60;
 

@@ -1,10 +1,15 @@
+// Copyright (c) 2018, Maxim Savin
+// for details. All rights reserved. Use of this source code is governed by a
+// MIT license that can be found in the LICENSE file.
+
 library pneuma.request;
 
 import 'dart:async';
 import 'dart:io';
-import 'package:pneuma/app.dart';
-import 'package:pneuma/body.dart';
-import 'package:pneuma/types.dart';
+
+import 'app.dart';
+import 'body.dart';
+import 'types.dart';
 
 class Request {
   final HttpRequest _req;

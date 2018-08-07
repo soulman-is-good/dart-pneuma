@@ -1,5 +1,7 @@
+library pneuma.middleware.conditional;
+
 import 'dart:async';
-import 'package:pneuma/pneuma.dart';
+import '../middleware.dart';
 
 class ConditionalMiddleware extends Middleware {
   final RegExp _condition;
