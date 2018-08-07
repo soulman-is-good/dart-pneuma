@@ -6,6 +6,12 @@ import '../middleware.dart';
 class SessionMiddleware extends Middleware {
   @override
   Future<Middleware> run(Request req, Response res) async {
-    return null;
+    if (req.session.isNew) {
+      print('new session!!!');
+      req.session['test'] = 'hello';
+    }
+    print(req.session);
+
+    return this.next;
   }
 }

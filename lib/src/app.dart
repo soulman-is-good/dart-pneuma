@@ -9,6 +9,8 @@ import 'dart:io';
 import 'dart:async';
 
 import 'middleware/conditional_middleware.dart';
+import 'request.dart';
+import 'response.dart';
 import 'middleware.dart';
 import 'types.dart';
 

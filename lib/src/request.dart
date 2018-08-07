@@ -18,12 +18,14 @@ class Request {
 
   Request(this._req, this.app): _body = new Body(_req);
 
+  Future<WebSocket> upgrade() => WebSocketTransformer.upgrade(_req);
+
   Uri get uri => _req.uri;
   Map<String, String> get query => _req.uri.queryParameters;
   String get path => _req.uri.path;
+  HttpSession get session => _req.session;
+  List<HttpCookie> get cookies => _req.cookies;
   RequestMethod get method => RequestMethod.values[_req.method];
-  Future<WebSocket> upgrade() => WebSocketTransformer.upgrade(_req);
-
   Future<Body> get body async {
     await _body.processRequest();
 
