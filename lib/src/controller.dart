@@ -5,6 +5,8 @@
 import 'dart:async';
 
 import 'middleware.dart';
+import 'request.dart';
+import 'response.dart';
 
 class Controller extends Middleware {
   Map<RegExp, Function> routeMap;

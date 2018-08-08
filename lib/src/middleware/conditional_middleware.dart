@@ -2,6 +2,9 @@ library pneuma.middleware.conditional;
 
 import 'dart:async';
 import '../middleware.dart';
+import '../request.dart';
+import '../response.dart';
+import '../types.dart';
 
 class ConditionalMiddleware extends Middleware {
   final RegExp _condition;
