@@ -24,7 +24,7 @@ class ConditionalMiddleware extends Middleware {
         StreamController controller = new StreamController();
 
         _handler(req, res, ([Exception error]) {
-          if (err == null) {
+          if (error == null) {
             controller.sink.add(this.next);
           } else {
             controller.sink.addError(error);

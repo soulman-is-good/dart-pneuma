@@ -24,7 +24,7 @@ class Request {
   Map<String, String> get query => _req.uri.queryParameters;
   String get path => _req.uri.path;
   HttpSession get session => _req.session;
-  List<HttpCookie> get cookies => _req.cookies;
+  List<Cookie> get cookies => _req.cookies;
   RequestMethod get method => RequestMethod.values[_req.method];
   Future<Body> get body async {
     await _body.processRequest();

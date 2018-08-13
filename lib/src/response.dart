@@ -8,6 +8,8 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 
+final JsonCodec _codec = new JsonCodec();
+
 class Response {
   HttpResponse _res;
   bool _headersSent = false;
@@ -62,7 +64,7 @@ class Response {
   Future json(Object json) {
     this
       ..headers.set(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
-      ..write(JSON.encode(json));
+      ..write(_codec.encode(json));
     return close();
   }
 }
