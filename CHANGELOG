@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.2.1] - 2018-08-14
+### Added
+- `stop` for Pneuma instance to stop HttpServer
+- methods to controll HttpServer#defaultHeaders
+
+## [0.2.0] - 2018-08-14
+### Changed
+- Updated to dart version 2
+
 ## [0.1.0] - 2018-08-06
 ### Added
 - Middleware as an interface

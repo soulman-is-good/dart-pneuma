@@ -19,6 +19,7 @@ const DEFAULT_REQUEST_TIMEOUT = 60;
 class Pneuma {
   final int port;
   final String host;
+  HttpServer _server;
   LinkedList<Middleware> _middlewares;
   Duration requestTimeoutDuration = new Duration(seconds: DEFAULT_REQUEST_TIMEOUT);
 
@@ -64,12 +65,33 @@ class Pneuma {
   Pneuma patch(dynamic path, MiddlewareHandler handler) => match(path, handler, method: RequestMethod.PATCH);
 
   Future start() async {
-    HttpServer server = await HttpServer.bind(this.host, this.port);
+    _server = await HttpServer.bind(this.host, this.port);
 
     print("Bound to ${this.host}:${this.port}");
-    server.listen(_handler);
+    _server.listen(_handler);
 
-    return server;
+    return _server;
+  }
+
+  Future stop({bool force = false}) {
+    if (_server == null) {
+      return new Future.value(null);
+    }
+    return _server.close(force: force);
+  }
+
+  void addDefaultHeaders(Map<String, Object> headers) {
+    headers.forEach((String name, Object value) {
+    _server.defaultResponseHeaders.add(name, value);
+    });
+  }
+
+  void clearDefaultHeaders() {
+    _server.defaultResponseHeaders.clear();
+  }
+
+  void removeDefaultHeader(String name) {
+    _server.defaultResponseHeaders.removeAll(name);
   }
 
   Future _handler(HttpRequest request) async {
