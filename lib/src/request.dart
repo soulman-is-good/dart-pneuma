@@ -26,7 +26,7 @@ class Request {
   HttpSession get session => _req.session;
   List<Cookie> get cookies => _req.cookies;
   RequestMethod get method => RequestMethod.values[_req.method];
-  HttpHeaders get heaers => _req.headers;
+  HttpHeaders get headers => _req.headers;
   Future<Body> get body async {
     await _body.processRequest();
 
