@@ -14,16 +14,19 @@ import 'response.dart';
 import 'middleware.dart';
 import 'types.dart';
 
-const DEFAULT_REQUEST_TIMEOUT = 60;
+const DEFAULT_REQUEST_TIMEOUT = 30;
+const DEFAULT_RESPONSE_TIMEOUT = 60;
 
 class Pneuma {
   final int port;
   final String host;
   final StreamController<ServerStatus> _statusController = new StreamController<ServerStatus>(); 
   HttpServer _server;
+  Map<String, Object> _headers = new Map();
   ServerStatus _serverStatus = ServerStatus.NOT_STARTED;
   LinkedList<Middleware> _middlewares;
   Duration requestTimeoutDuration = new Duration(seconds: DEFAULT_REQUEST_TIMEOUT);
+  Duration responseDeadline = new Duration(seconds: DEFAULT_RESPONSE_TIMEOUT);
 
   Pneuma({String host, int port}):
     this.host = host ?? Platform.environment['IP'] ?? '127.0.0.1',
@@ -67,20 +70,28 @@ class Pneuma {
   Pneuma delete(dynamic path, MiddlewareHandler handler) => match(path, handler, method: RequestMethod.DELETE);
   Pneuma patch(dynamic path, MiddlewareHandler handler) => match(path, handler, method: RequestMethod.PATCH);
 
-  Future start() async {
+  Future<Pneuma> start() async {
     try {
       _server = await HttpServer.bind(this.host, this.port);
+
     } on Exception catch(err) {
       _setStatus(ServerStatus.ERROR);
 
       throw err;
     }
     _setStatus(ServerStatus.IDLE);
-    _server.listen(_handler, cancelOnError: true, onError: (err) {
-      _setStatus(ServerStatus.ERROR);
-    });
+    _server
+      .listen(
+        _handler,
+        cancelOnError: true,
+        onError: (err) {
+          _setStatus(ServerStatus.ERROR);
+          print(err);
+        }
+      );
+    _setupOnStart();
 
-    return _server;
+    return this;
   }
 
   Future stop({bool force = false}) async {
@@ -99,17 +110,29 @@ class Pneuma {
   }
 
   void addDefaultHeaders(Map<String, Object> headers) {
-    headers.forEach((String name, Object value) {
-    _server.defaultResponseHeaders.add(name, value);
-    });
+    if (_serverStatus == ServerStatus.IDLE) {
+      headers.forEach((String name, Object value) {
+        _server.defaultResponseHeaders.add(name, value);
+      });
+    } else {
+      _headers.addAll(headers);
+    }
   }
 
   void clearDefaultHeaders() {
-    _server.defaultResponseHeaders.clear();
+    if (_serverStatus == ServerStatus.IDLE) {
+      _server.defaultResponseHeaders.clear();
+    } else {
+      _headers.clear();
+    }
   }
 
   void removeDefaultHeader(String name) {
-    _server.defaultResponseHeaders.removeAll(name);
+    if (_serverStatus == ServerStatus.IDLE) {
+      _server.defaultResponseHeaders.removeAll(name);
+    } else {
+      _headers.remove(name);
+    }
   }
 
   Future _handler(HttpRequest request) async {
@@ -120,6 +143,7 @@ class Pneuma {
     res.done.then((_) {
       resSent = true;
     });
+    res.deadline = responseDeadline;
 
     Middleware middleware = _middlewares.first;
 
@@ -134,13 +158,29 @@ class Pneuma {
     } on TimeoutException catch(err) {
       // TODO: Custom handler
       res.status(504).send(err.message);
-    } catch(err) {
+    } catch(err, stack) {
+      // TODO: Custom handler and processing
       res.status(500).send(err.toString());
+      print(err);
+      print(stack);
     }
   }
+
   void _setStatus(ServerStatus status) {
     _serverStatus = status;
     _statusController.sink.add(status);
+  }
+
+  void _setupOnStart() {
+    if (_headers.isNotEmpty) {
+      _headers.forEach((String name, Object value) {
+        _server.defaultResponseHeaders.add(name, value);
+      });
+      _headers.clear();
+    }
+    _server.serverHeader = 'Pneuma server';
+    _server.autoCompress = true;
+    _server.idleTimeout = requestTimeoutDuration;
   }
 
   ServerStatus get status => _serverStatus;

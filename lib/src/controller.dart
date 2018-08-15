@@ -18,9 +18,8 @@ class Controller extends Middleware {
     }
     bool hasMatch = false;
     String url = req.path;
-    List<RegExp> routes = routeMap.keys;
 
-    for (RegExp route in routes) {
+    for (RegExp route in routeMap.keys) {
       if (route.hasMatch(url)) {
         hasMatch = true;
         Function action = routeMap[route];
