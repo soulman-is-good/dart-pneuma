@@ -58,7 +58,7 @@ class TestController extends Controller {
 }
 
 main() async {
-  Pneuma srv = new Pneuma();
+  Pneuma srv = new Pneuma(port: 8080);
 
   srv
     ..use(new LogMiddleware())
@@ -74,5 +74,6 @@ main() async {
       });
     });
 
-  srv.start();
+  await srv.start();
+  print('Server started at ${srv.host}:${srv.port}');
 }

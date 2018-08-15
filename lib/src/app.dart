@@ -19,14 +19,17 @@ const DEFAULT_REQUEST_TIMEOUT = 60;
 class Pneuma {
   final int port;
   final String host;
+  final StreamController<ServerStatus> _statusController = new StreamController<ServerStatus>(); 
   HttpServer _server;
+  ServerStatus _serverStatus = ServerStatus.NOT_STARTED;
   LinkedList<Middleware> _middlewares;
   Duration requestTimeoutDuration = new Duration(seconds: DEFAULT_REQUEST_TIMEOUT);
 
   Pneuma({String host, int port}):
     this.host = host ?? Platform.environment['IP'] ?? '127.0.0.1',
-    this.port = port ?? int.parse(Platform.environment['PORT'] ?? '8080', onError: (src) => 8080)
+    this.port = port ?? int.tryParse(Platform.environment['PORT'] ?? '8080') ?? 8080
   {
+    _statusController.sink.add(_serverStatus);
     _middlewares = new LinkedList<Middleware>();
   }
 
@@ -65,19 +68,34 @@ class Pneuma {
   Pneuma patch(dynamic path, MiddlewareHandler handler) => match(path, handler, method: RequestMethod.PATCH);
 
   Future start() async {
-    _server = await HttpServer.bind(this.host, this.port);
+    try {
+      _server = await HttpServer.bind(this.host, this.port);
+    } on Exception catch(err) {
+      _setStatus(ServerStatus.ERROR);
 
-    print("Bound to ${this.host}:${this.port}");
-    _server.listen(_handler);
+      throw err;
+    }
+    _setStatus(ServerStatus.IDLE);
+    _server.listen(_handler, cancelOnError: true, onError: (err) {
+      _setStatus(ServerStatus.ERROR);
+    });
 
     return _server;
   }
 
-  Future stop({bool force = false}) {
+  Future stop({bool force = false}) async {
     if (_server == null) {
-      return new Future.value(null);
+      return null;
     }
-    return _server.close(force: force);
+    try {
+      await _server.close(force: force);
+    } on Exception catch(err) {
+      _setStatus(ServerStatus.ERROR);
+
+      throw err;
+    }
+
+    return null;
   }
 
   void addDefaultHeaders(Map<String, Object> headers) {
@@ -120,4 +138,11 @@ class Pneuma {
       res.status(500).send(err.toString());
     }
   }
+  void _setStatus(ServerStatus status) {
+    _serverStatus = status;
+    _statusController.sink.add(status);
+  }
+
+  ServerStatus get status => _serverStatus;
+  Stream<ServerStatus> get statusStream => _statusController.stream.asBroadcastStream();
 }

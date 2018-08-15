@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.2.4] - 2018-08-15
+### Added
+- Added ServerStatus to Pneuma
+- On start and server error handling
+- ServerStatus stream
+
+### Changed
+- Updated HttpHeaders to dart 2 for Response
+
 ## [0.2.2] - 2018-08-14
 ### Added
 - request headers

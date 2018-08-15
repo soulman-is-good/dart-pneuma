@@ -60,3 +60,10 @@ class RequestMethod {
   @override
   String toString() => name;
 }
+
+enum ServerStatus {
+  IDLE,
+  NOT_STARTED,
+  ERROR,
+  STOPPED,
+}
