@@ -23,4 +23,6 @@ class Body {
   get body => _body?.body;
 
   String get type => _body?.type;
+
+  dynamic operator[](String name) => body == null ? body : body[name];
 }

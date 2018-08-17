@@ -7,9 +7,29 @@ import 'dart:async';
 import 'middleware.dart';
 import 'request.dart';
 import 'response.dart';
+import 'types.dart';
 
+/// MVC approach middleware.
+/// 
+/// Allows to use MVC approach by mapping route regular expressions
+/// to methods and actions.
+/// ```dart
+/// class TestController extends Controller {
+///   TestController() {
+///     routeMap = {
+///       new RegExp(r'\/test\/(.*)$'): {
+///         RequestMethod.GET: getTestAction,
+///       },
+///     };
+///   }
+/// 
+///   void getTestAction(Request req, Response res, String param) {
+///     res.send('Param: $param');
+///   }
+/// }
+/// ```
 class Controller extends Middleware {
-  Map<RegExp, Function> routeMap;
+  Map<RegExp, Map<RequestMethod, Function>> routeMap;
 
   @override
   Future<Middleware> run(Request req, Response res) async {
@@ -20,11 +40,16 @@ class Controller extends Middleware {
     String url = req.path;
 
     for (RegExp route in routeMap.keys) {
-      if (route.hasMatch(url)) {
-        hasMatch = true;
-        Function action = routeMap[route];
+      Match match = route.firstMatch(url);
+      int groupCount = match?.groupCount;
+      Map<RequestMethod, Function> actions = routeMap[route];
 
-        await action(req, res);
+      if (groupCount != null && actions.containsKey(req.method)) {
+        Function action = actions[req.method];
+        List<int> indexes = List<int>.generate(groupCount, (int i) => i + 1);
+
+        hasMatch = true;
+        await Function.apply(action, [req, res]..addAll(match.groups(indexes)));
         break;
       }
     }

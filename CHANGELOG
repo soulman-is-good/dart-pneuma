@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.3.0] - 2018-08-17
+### Changed
+- Pneuma server get/post/etc shortcut methods accepts dynamic as handler. Could be middleware
+- Controller now passes matched params as an arguments aside of req, and res
+
 ## [0.2.5] - 2018-08-15
 ### Added
 - Response timeout added

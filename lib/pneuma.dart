@@ -8,5 +8,6 @@ export 'src/types.dart';
 export 'src/app.dart';
 export 'src/request.dart';
 export 'src/response.dart';
+export 'src/body.dart';
 export 'src/middleware.dart';
 export 'src/controller.dart';

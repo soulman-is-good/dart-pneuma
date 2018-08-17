@@ -37,24 +37,24 @@ class RequestMethod {
     'TRACE': TRACE,
   };
 
-  static List<String> restMethods = <String>[
-    GET.name,
-    POST.name,
-    PUT.name,
-    PATCH.name,  
-    DELETE.name,
+  static List<RequestMethod> restMethods = <RequestMethod>[
+    GET,
+    POST,
+    PUT,
+    PATCH,  
+    DELETE,
   ];
 
-  static List<String> methods = <String>[
-    GET.name,
-    POST.name,
-    PUT.name,
-    PATCH.name,
-    DELETE.name,
-    HEAD.name,
-    OPTIONS.name,
-    CONNECT.name,
-    TRACE.name,
+  static List<RequestMethod> methods = <RequestMethod>[
+    GET,
+    POST,
+    PUT,
+    PATCH,
+    DELETE,
+    HEAD,
+    OPTIONS,
+    CONNECT,
+    TRACE,
   ]; 
 
   @override

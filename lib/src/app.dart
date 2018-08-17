@@ -64,11 +64,11 @@ class Pneuma {
     return this;
   }
 
-  Pneuma get(dynamic path, MiddlewareHandler handler) => match(path, handler, method: RequestMethod.GET);
-  Pneuma post(dynamic path, MiddlewareHandler handler) => match(path, handler, method: RequestMethod.POST);
-  Pneuma put(dynamic path, MiddlewareHandler handler) => match(path, handler, method: RequestMethod.PUT);
-  Pneuma delete(dynamic path, MiddlewareHandler handler) => match(path, handler, method: RequestMethod.DELETE);
-  Pneuma patch(dynamic path, MiddlewareHandler handler) => match(path, handler, method: RequestMethod.PATCH);
+  Pneuma get(dynamic path, dynamic handler) => match(path, handler, method: RequestMethod.GET);
+  Pneuma post(dynamic path, dynamic handler) => match(path, handler, method: RequestMethod.POST);
+  Pneuma put(dynamic path, dynamic handler) => match(path, handler, method: RequestMethod.PUT);
+  Pneuma delete(dynamic path, dynamic handler) => match(path, handler, method: RequestMethod.DELETE);
+  Pneuma patch(dynamic path, dynamic handler) => match(path, handler, method: RequestMethod.PATCH);
 
   Future<Pneuma> start() async {
     try {

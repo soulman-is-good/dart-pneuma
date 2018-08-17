@@ -38,14 +38,27 @@ class CustomMiddleware extends Middleware {
 class TestController extends Controller {
   TestController() {
     routeMap = {
-      new RegExp(r'^\/controller\/timeout$'): timeoutAction,
-      new RegExp(r'^\/controller\/error$'): errorAction,
-      new RegExp(r'^\/controller'): indexAction,
+      new RegExp(r'^\/controller\/timeout$'): {
+        RequestMethod.GET: timeoutAction,
+      },
+      new RegExp(r'^\/controller\/error$'): {
+        RequestMethod.GET: errorAction,
+      },
+      new RegExp(r'^\/controller\/params\/(\d+)\/(.+)$'): {
+        RequestMethod.GET: paramsAction,
+      },
+      new RegExp(r'^\/controller'): {
+        RequestMethod.GET: indexAction,
+      }
     };
   }
   
   void indexAction(Request req, Response res) {
     res.send('Index Page');
+  }
+  
+  void paramsAction(Request req, Response res, String index, String other) {
+    res.send('Index: $index, and $other');
   }
   
   Future timeoutAction(Request req, Response res) async {
