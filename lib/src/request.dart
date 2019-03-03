@@ -14,9 +14,12 @@ import 'types.dart';
 class Request {
   final HttpRequest _req;
   final Body _body;
+  final Map<String, dynamic> additionalParams;
   final Pneuma app;
 
-  Request(this._req, this.app): _body = new Body(_req);
+  Request(this._req, this.app):
+    _body = new Body(_req),
+    additionalParams = new Map();
 
   Future<WebSocket> upgrade() => WebSocketTransformer.upgrade(_req);
 
