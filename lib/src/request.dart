@@ -14,12 +14,12 @@ import 'types.dart';
 class Request {
   final HttpRequest _req;
   final Body _body;
-  final Map<String, dynamic> additionalParams;
+  final Map<String, dynamic> _additionalParams;
   final Pneuma app;
 
   Request(this._req, this.app):
     _body = new Body(_req),
-    additionalParams = new Map();
+    _additionalParams = new Map();
 
   Future<WebSocket> upgrade() => WebSocketTransformer.upgrade(_req);
 
@@ -35,6 +35,11 @@ class Request {
     await _body.processRequest();
 
     return _body;
+  }
+
+  dynamic operator [] (String key) => _additionalParams[key];
+  void operator []= (String key, dynamic value) {
+    _additionalParams[key] = value;
   }
 
   bool get isGet => method == RequestMethod.GET;

@@ -63,7 +63,7 @@ class Response {
 
   Future json(Object json) {
     this
-      ..headers.set(HttpHeaders.contentTypeHeader, ContentType.json)
+      ..headers.set(HttpHeaders.contentTypeHeader, ContentType.json.toString())
       ..write(_codec.encode(json));
     return close();
   }
