@@ -37,9 +37,11 @@ class WebsocketMiddleware extends Middleware {
           ws.add('More test');
         });
       });
-    } else {
-      return this.next;
+
+      return null;
     }
+
+    return this.next;
   }
 }
 
@@ -79,7 +81,7 @@ main() async {
     </script>
   </body>
 </html>
-      ''', contentType: ContentType.HTML);
+      ''', contentType: ContentType.html.toString());
     });
 
   srv.start();

@@ -16,7 +16,11 @@ class Body {
 
   Future processRequest() async {
     if (_body == null) {
-      _body = await HttpBodyHandler.processRequest(_req);
+      try {
+        _body = await HttpBodyHandler.processRequest(_req);
+      } catch (err) {
+        print('Could not parse body');
+      }
     }
   }
 

@@ -159,8 +159,13 @@ class Pneuma {
       // TODO: Custom handler
       res.status(504).send(err.message);
     } catch(err, stack) {
-      // TODO: Custom handler and processing
-      res.status(500).send(err.toString());
+      // Wait if response is sent - done should trigger
+      Timer.run(() {
+        // TODO: Custom handler and processing
+        if (!resSent) {
+          res.status(500).send(err.toString());
+        }
+      });
       print(err);
       print(stack);
     }
