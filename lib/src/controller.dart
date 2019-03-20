@@ -32,13 +32,15 @@ class Controller extends Middleware {
   Map<RegExp, Map<RequestMethod, Function>> routeMap;
 
   @override
-  Future<Middleware> run(Request req, Response res) async {
-    if (routeMap == null) {
+  Future<Middleware> run(Request req, Response res, {String baseUrl = '/'}) async {
+    String url = req.path;
+
+    if (routeMap == null || !url.startsWith(baseUrl)) {
       return this.next;
     }
     bool hasMatch = false;
-    String url = req.path;
 
+    url = url.replaceFirst(baseUrl.replaceAll(RegExp(r'/$'), ''), '');
     for (RegExp route in routeMap.keys) {
       Match match = route.firstMatch(url);
       int groupCount = match?.groupCount;

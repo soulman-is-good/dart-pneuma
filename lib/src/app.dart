@@ -20,7 +20,8 @@ const DEFAULT_RESPONSE_TIMEOUT = 60;
 class Pneuma {
   final int port;
   final String host;
-  final StreamController<ServerStatus> _statusController = new StreamController<ServerStatus>(); 
+  final String baseUrl;
+  final StreamController<ServerStatus> _statusController = new StreamController<ServerStatus>();
   HttpServer _server;
   Map<String, Object> _headers = new Map();
   ServerStatus _serverStatus = ServerStatus.NOT_STARTED;
@@ -28,7 +29,7 @@ class Pneuma {
   Duration requestTimeoutDuration = new Duration(seconds: DEFAULT_REQUEST_TIMEOUT);
   Duration responseDeadline = new Duration(seconds: DEFAULT_RESPONSE_TIMEOUT);
 
-  Pneuma({String host, int port}):
+  Pneuma({String host, int port, this.baseUrl = '/'}):
     this.host = host ?? Platform.environment['IP'] ?? '127.0.0.1',
     this.port = port ?? int.tryParse(Platform.environment['PORT'] ?? '8080') ?? 8080
   {
@@ -149,11 +150,12 @@ class Pneuma {
 
     try {
       while (middleware != null) {
-        middleware = await middleware.run(req, res).timeout(requestTimeoutDuration, onTimeout: () {
-          if (!resSent) {
-            throw new TimeoutException('Request timeout');
-          }
-        });
+        middleware = await middleware.run(req, res, baseUrl: baseUrl)
+          .timeout(requestTimeoutDuration, onTimeout: () {
+            if (!resSent) {
+              throw new TimeoutException('Request timeout');
+            }
+          });
       }
     } on TimeoutException catch(err) {
       // TODO: Custom handler

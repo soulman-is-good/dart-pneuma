@@ -14,10 +14,15 @@ class ConditionalMiddleware extends Middleware {
   ConditionalMiddleware(this._condition, this._method, this._handler);
 
   @override
-  Future<Middleware> run(Request req, Response res) async {
+  Future<Middleware> run(Request req, Response res, {String baseUrl = '/'}) async {
     Middleware middleware;
+    String url = req.path;
 
-    if (_condition.hasMatch(req.path) && (_method == null || req.method == _method)) {
+    if (!url.startsWith(baseUrl)) {
+      return this.next;
+    }
+    url = url.replaceFirst(baseUrl.replaceAll(RegExp(r'/$'), ''), '');
+    if (_condition.hasMatch(url) && (_method == null || req.method == _method)) {
       if (_handler is Middleware) {
         middleware = await _handler.run(req, res);
       } else if (_handler is MiddlewareHandler) {

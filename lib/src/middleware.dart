@@ -11,5 +11,5 @@ import 'request.dart';
 import 'response.dart';
 
 abstract class Middleware extends LinkedListEntry<Middleware> {
-  Future<Middleware> run(Request req, Response res);
+  Future<Middleware> run(Request req, Response res, {String baseUrl = '/'});
 }

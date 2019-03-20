@@ -4,7 +4,7 @@ import 'package:pneuma/pneuma.dart';
 
 class LogMiddleware extends Middleware {
   @override
-  Future<Middleware> run(Request req, Response res) {
+  Future<Middleware> run(Request req, Response res, {String baseUrl = '/'}) {
     DateTime start = new DateTime.now();
     
     res.done.then((_res) {
@@ -25,7 +25,7 @@ class WebsocketMiddleware extends Middleware {
   WebsocketMiddleware(this.baseUrl);
 
   @override
-  Future<Middleware> run(Request req, Response res) async {
+  Future<Middleware> run(Request req, Response res, {String baseUrl = '/'}) async {
     if (req.path == baseUrl) {
       print('Upgrading to a websocket...');
       WebSocket ws = await req.upgrade();

@@ -3,7 +3,7 @@ import 'package:pneuma/pneuma.dart';
 
 class LogMiddleware extends Middleware {
   @override
-  Future<Middleware> run(Request req, Response res) {
+  Future<Middleware> run(Request req, Response res, {String baseUrl = '/'}) {
     DateTime start = new DateTime.now();
     
     res.done.then((_res) {
@@ -20,7 +20,7 @@ class LogMiddleware extends Middleware {
 
 class CustomMiddleware extends Middleware {
   @override
-  Future<Middleware> run(Request req, Response res) async {
+  Future<Middleware> run(Request req, Response res, {String baseUrl = '/'}) async {
     if (req.path == '/test') {
       await new Future.delayed(new Duration(seconds: 1));
 
