@@ -1,4 +1,4 @@
-# Pneuma 
+# Pneuma [![pub package](https://img.shields.io/pub/v/pneuma.svg)](https://pub.dev/packages/pneuma)
 > The vital spirit, soul, or creative force of a person.<br>
 > "In Stoic philosophy, the pneuma penetrates all things, holding things together."<br>
 > [Wikipedia](https://en.wikipedia.org/wiki/Pneuma)
