@@ -13,7 +13,7 @@ Import the dependency inside your main file
 import 'package:pneuma/pneuma.dart';
 
 void main() {
-  Pneuma app = new Pneuma();
+  Pneuma app = Pneuma();
 
   app.start();
 }
@@ -33,10 +33,10 @@ Idea is the same as in nodejs's expressjs library. You can just map paths to a s
 ```dart
 import 'package:pneuma/pneuma.dart';
 
-final RegExp allRoutes = new RegExp('.*');
+final RegExp allRoutes = RegExp('.*');
 
 void main() {
-  Pneuma app = new Pneuma()
+  Pneuma app = Pneuma()
     ..get('/user', (req, res, next) {
       res.send('Hello user');
     })
@@ -63,10 +63,10 @@ import 'package:pneuma/pneuma.dart';
 class LogMiddleware extends Middleware {
   @override
   Future<Middleware> run(Request req, Response res) {
-    DateTime start = new DateTime.now();
+    DateTime start = DateTime.now();
     
     res.done.then((_res) {
-      DateTime sent = new DateTime.now();
+      DateTime sent = DateTime.now();
       String stamp = sent.toIso8601String();
       double timeTaken = (sent.millisecondsSinceEpoch - start.millisecondsSinceEpoch) / 1000;
 
@@ -94,11 +94,12 @@ Extended from `Middleware`, `Controller` class can also be extended to let you m
 
 ```dart
 class UserController extends Controller {
-  TestController() {
-    routeMap = {
-      new RegExp(r'^\/user'): indexAction,
-    };
-  }
+  @override
+  get routeMap => {
+    RegExp(r'^\/user'): {
+      RequestMethod.GET: indexAction,
+    },
+  };
 
   void indexAction(Request req, Response res) {
     res.send('Index Page');
@@ -106,16 +107,18 @@ class UserController extends Controller {
 }
 
 void main() {
-  Pneuma app = new Pneuma()
-    ..use(new UserController());
+  Pneuma app = Pneuma()
+    ..use(UserController());
 
   app.start();
 }
 ```
 
-`routeMap` is a `Map<RegExp, Invocation>` which, in oreder for actions to be mapped to specified paths, should be defined.
+### Plans
 
-Next step for the controllers will be defining _annotations_ to marks actions for a specific route in a more friendlier manner.
+`routeMap` is a `Map` which, in oreder for actions to be mapped to specified paths, should be defined.
+
+Next step for the controllers will be defining _annotations_ to mark actions for a specific route in a more friendlier manner.
 
 ```dart
 class UserController extends Controller {
