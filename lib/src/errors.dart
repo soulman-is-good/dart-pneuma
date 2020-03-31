@@ -8,7 +8,9 @@ class ServerStatusException implements Exception {
   final int code;
   final String message;
 
-  ServerStatusException([this.code = HttpStatus.INTERNAL_SERVER_ERROR, this.message = 'Internal server error']);
+  ServerStatusException(
+      [this.code = HttpStatus.internalServerError,
+      this.message = 'Internal server error']);
 
   @override
   String toString() {
@@ -21,9 +23,10 @@ class ServerStatusException implements Exception {
 }
 
 class HTTPNotFoundException extends ServerStatusException {
-  HTTPNotFoundException(): super(HttpStatus.NOT_FOUND, 'Not found');
+  HTTPNotFoundException() : super(HttpStatus.notFound, 'Not found');
 }
 
 class HTTPMethodNotSupportedException extends ServerStatusException {
-  HTTPMethodNotSupportedException(): super(HttpStatus.METHOD_NOT_ALLOWED, 'Not supported');
+  HTTPMethodNotSupportedException()
+      : super(HttpStatus.methodNotAllowed, 'Not supported');
 }

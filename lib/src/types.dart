@@ -7,8 +7,9 @@ library pneuma.types;
 import 'request.dart';
 import 'response.dart';
 
-typedef void WaterfallHandler([Exception error]);
-typedef void MiddlewareHandler(Request req, Response res, WaterfallHandler next);
+typedef WaterfallHandler = void Function([Exception error]);
+typedef MiddlewareHandler = void Function(
+    Request req, Response res, WaterfallHandler next);
 
 class RequestMethod {
   final String name;
@@ -41,7 +42,7 @@ class RequestMethod {
     GET,
     POST,
     PUT,
-    PATCH,  
+    PATCH,
     DELETE,
   ];
 
@@ -55,7 +56,7 @@ class RequestMethod {
     OPTIONS,
     CONNECT,
     TRACE,
-  ]; 
+  ];
 
   @override
   String toString() => name;

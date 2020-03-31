@@ -28,5 +28,5 @@ class Body {
 
   String get type => _body?.type;
 
-  dynamic operator[](String name) => body == null ? body : body[name];
+  dynamic operator [](String name) => body == null ? body : body[name];
 }

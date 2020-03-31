@@ -10,29 +10,30 @@ import 'response.dart';
 import 'types.dart';
 
 /// MVC approach middleware.
-/// 
+///
 /// Allows to use MVC approach by mapping route regular expressions
 /// to methods and actions.
 /// ```dart
 /// class TestController extends Controller {
 ///   TestController() {
 ///     routeMap = {
-///       new RegExp(r'\/test\/(.*)$'): {
+///       RegExp(r'\/test\/(.*)$'): {
 ///         RequestMethod.GET: getTestAction,
 ///       },
 ///     };
 ///   }
-/// 
+///
 ///   void getTestAction(Request req, Response res, String param) {
 ///     res.send('Param: $param');
 ///   }
 /// }
 /// ```
-class Controller extends Middleware {
-  Map<RegExp, Map<RequestMethod, Function>> routeMap;
+abstract class Controller extends Middleware {
+  Map<RegExp, Map<RequestMethod, Function>> get routeMap;
 
   @override
-  Future<Middleware> run(Request req, Response res, {String baseUrl = '/'}) async {
+  Future<Middleware> run(Request req, Response res,
+      {String baseUrl = '/'}) async {
     String url = req.path;
 
     if (routeMap == null || !url.startsWith(baseUrl)) {
@@ -47,15 +48,15 @@ class Controller extends Middleware {
       Map<RequestMethod, Function> actions = routeMap[route];
 
       if (groupCount != null && actions.containsKey(req.method)) {
-        Function action = actions[req.method];
-        List<int> indexes = List<int>.generate(groupCount, (int i) => i + 1);
+        final action = actions[req.method];
+        final indexes = List<int>.generate(groupCount, (int i) => i + 1);
 
         hasMatch = true;
         await Function.apply(action, [req, res]..addAll(match.groups(indexes)));
         break;
       }
     }
-    
+
     if (!hasMatch) {
       return this.next;
     }

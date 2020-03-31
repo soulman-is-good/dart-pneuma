@@ -17,9 +17,9 @@ class Request {
   final Map<String, dynamic> _additionalParams;
   final Pneuma app;
 
-  Request(this._req, this.app):
-    _body = new Body(_req),
-    _additionalParams = new Map();
+  Request(this._req, this.app)
+      : _body = Body(_req),
+        _additionalParams = Map();
 
   Future<WebSocket> upgrade() => WebSocketTransformer.upgrade(_req);
 
@@ -37,8 +37,8 @@ class Request {
     return _body;
   }
 
-  dynamic operator [] (String key) => _additionalParams[key];
-  void operator []= (String key, dynamic value) {
+  dynamic operator [](String key) => _additionalParams[key];
+  void operator []=(String key, dynamic value) {
     _additionalParams[key] = value;
   }
 

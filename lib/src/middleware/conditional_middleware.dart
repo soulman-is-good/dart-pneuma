@@ -14,7 +14,8 @@ class ConditionalMiddleware extends Middleware {
   ConditionalMiddleware(this._condition, this._method, this._handler);
 
   @override
-  Future<Middleware> run(Request req, Response res, {String baseUrl = '/'}) async {
+  Future<Middleware> run(Request req, Response res,
+      {String baseUrl = '/'}) async {
     Middleware middleware;
     String url = req.path;
 
@@ -22,11 +23,12 @@ class ConditionalMiddleware extends Middleware {
       return this.next;
     }
     url = url.replaceFirst(baseUrl.replaceAll(RegExp(r'/$'), ''), '');
-    if (_condition.hasMatch(url) && (_method == null || req.method == _method)) {
+    if (_condition.hasMatch(url) &&
+        (_method == null || req.method == _method)) {
       if (_handler is Middleware) {
         middleware = await _handler.run(req, res);
       } else if (_handler is MiddlewareHandler) {
-        StreamController controller = new StreamController();
+        StreamController controller = StreamController();
 
         _handler(req, res, ([Exception error]) {
           if (error == null) {
@@ -39,7 +41,8 @@ class ConditionalMiddleware extends Middleware {
 
         await controller.stream.first;
       } else {
-        throw new Exception('Handler is not proper middleware on ${_condition.toString()}');
+        throw Exception(
+            'Handler is not proper middleware on ${_condition.toString()}');
       }
     } else {
       middleware = this.next;

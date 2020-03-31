@@ -21,20 +21,22 @@ class Pneuma {
   final int port;
   final String host;
   final String baseUrl;
-  final StreamController<ServerStatus> _statusController = new StreamController<ServerStatus>();
+  final StreamController<ServerStatus> _statusController =
+      StreamController<ServerStatus>();
   HttpServer _server;
-  Map<String, Object> _headers = new Map();
+  Map<String, Object> _headers = Map();
   ServerStatus _serverStatus = ServerStatus.NOT_STARTED;
   LinkedList<Middleware> _middlewares;
-  Duration requestTimeoutDuration = new Duration(seconds: DEFAULT_REQUEST_TIMEOUT);
-  Duration responseDeadline = new Duration(seconds: DEFAULT_RESPONSE_TIMEOUT);
+  Duration requestTimeoutDuration = Duration(seconds: DEFAULT_REQUEST_TIMEOUT);
+  Duration responseDeadline = Duration(seconds: DEFAULT_RESPONSE_TIMEOUT);
 
-  Pneuma({String host, int port, this.baseUrl = '/'}):
-    this.host = host ?? Platform.environment['IP'] ?? '127.0.0.1',
-    this.port = port ?? int.tryParse(Platform.environment['PORT'] ?? '8080') ?? 8080
-  {
+  Pneuma({String host, int port, this.baseUrl = '/'})
+      : this.host = host ?? Platform.environment['IP'] ?? '127.0.0.1',
+        this.port = port ??
+            int.tryParse(Platform.environment['PORT'] ?? '8080') ??
+            8080 {
     _statusController.sink.add(_serverStatus);
-    _middlewares = new LinkedList<Middleware>();
+    _middlewares = LinkedList<Middleware>();
   }
 
   Pneuma use(Middleware middleware) {
@@ -49,47 +51,45 @@ class Pneuma {
     return this;
   }
 
-  Pneuma match(
-    dynamic/*RegExp|String*/ path,
-    dynamic/*Middleware|MiddlewareHandler*/ handler,
-    {RequestMethod method}
-  ) {
-    RegExp condition = path is RegExp ? path : new RegExp("^" + path);
+  Pneuma match(dynamic /*RegExp|String*/ path,
+      dynamic /*Middleware|MiddlewareHandler*/ handler,
+      {RequestMethod method}) {
+    RegExp condition = path is RegExp ? path : RegExp("^" + path);
 
     if (handler is! Middleware && handler is! MiddlewareHandler) {
-      throw new Exception('Handler should be of type Middleware or MiddlewareHandler');
+      throw Exception(
+          'Handler should be of type Middleware or MiddlewareHandler');
     }
-    
-    _middlewares.add(new ConditionalMiddleware(condition, method, handler));
+
+    _middlewares.add(ConditionalMiddleware(condition, method, handler));
 
     return this;
   }
 
-  Pneuma get(dynamic path, dynamic handler) => match(path, handler, method: RequestMethod.GET);
-  Pneuma post(dynamic path, dynamic handler) => match(path, handler, method: RequestMethod.POST);
-  Pneuma put(dynamic path, dynamic handler) => match(path, handler, method: RequestMethod.PUT);
-  Pneuma delete(dynamic path, dynamic handler) => match(path, handler, method: RequestMethod.DELETE);
-  Pneuma patch(dynamic path, dynamic handler) => match(path, handler, method: RequestMethod.PATCH);
+  Pneuma get(dynamic path, dynamic handler) =>
+      match(path, handler, method: RequestMethod.GET);
+  Pneuma post(dynamic path, dynamic handler) =>
+      match(path, handler, method: RequestMethod.POST);
+  Pneuma put(dynamic path, dynamic handler) =>
+      match(path, handler, method: RequestMethod.PUT);
+  Pneuma delete(dynamic path, dynamic handler) =>
+      match(path, handler, method: RequestMethod.DELETE);
+  Pneuma patch(dynamic path, dynamic handler) =>
+      match(path, handler, method: RequestMethod.PATCH);
 
   Future<Pneuma> start() async {
     try {
       _server = await HttpServer.bind(this.host, this.port);
-
-    } on Exception catch(err) {
+    } on Exception catch (err) {
       _setStatus(ServerStatus.ERROR);
 
       throw err;
     }
     _setStatus(ServerStatus.IDLE);
-    _server
-      .listen(
-        _handler,
-        cancelOnError: true,
-        onError: (err) {
-          _setStatus(ServerStatus.ERROR);
-          print(err);
-        }
-      );
+    _server.listen(_handler, cancelOnError: true, onError: (err) {
+      _setStatus(ServerStatus.ERROR);
+      print(err);
+    });
     _setupOnStart();
 
     return this;
@@ -101,7 +101,7 @@ class Pneuma {
     }
     try {
       await _server.close(force: force);
-    } on Exception catch(err) {
+    } on Exception catch (err) {
       _setStatus(ServerStatus.ERROR);
 
       throw err;
@@ -138,9 +138,9 @@ class Pneuma {
 
   Future _handler(HttpRequest request) async {
     bool resSent = false;
-    Request req = new Request(request, this);
-    Response res = new Response(request.response);
-    
+    Request req = Request(request, this);
+    Response res = Response(request.response);
+
     res.done.then((_) {
       resSent = true;
     });
@@ -150,17 +150,20 @@ class Pneuma {
 
     try {
       while (middleware != null) {
-        middleware = await middleware.run(req, res, baseUrl: baseUrl)
-          .timeout(requestTimeoutDuration, onTimeout: () {
-            if (!resSent) {
-              throw new TimeoutException('Request timeout');
-            }
-          });
+        middleware = await middleware
+            .run(req, res, baseUrl: baseUrl)
+            .timeout(requestTimeoutDuration, onTimeout: () {
+          if (!resSent) {
+            throw TimeoutException('Request timeout');
+          }
+
+          return null;
+        });
       }
-    } on TimeoutException catch(err) {
+    } on TimeoutException catch (err) {
       // TODO: Custom handler
       res.status(504).send(err.message);
-    } catch(err, stack) {
+    } catch (err, stack) {
       // Wait if response is sent - done should trigger
       Timer.run(() {
         // TODO: Custom handler and processing
@@ -191,5 +194,6 @@ class Pneuma {
   }
 
   ServerStatus get status => _serverStatus;
-  Stream<ServerStatus> get statusStream => _statusController.stream.asBroadcastStream();
+  Stream<ServerStatus> get statusStream =>
+      _statusController.stream.asBroadcastStream();
 }

@@ -5,17 +5,19 @@ import 'package:pneuma/pneuma.dart';
 class LogMiddleware extends Middleware {
   @override
   Future<Middleware> run(Request req, Response res, {String baseUrl = '/'}) {
-    DateTime start = new DateTime.now();
-    
-    res.done.then((_res) {
-      DateTime sent = new DateTime.now();
-      String stamp = sent.toIso8601String();
-      double timeTaken = (sent.millisecondsSinceEpoch - start.millisecondsSinceEpoch) / 1000;
+    DateTime start = DateTime.now();
 
-      print('[$stamp]: ${req.method.name} ${_res.statusCode} ${req.uri.toString()} took ${timeTaken} sec.');
+    res.done.then((_res) {
+      DateTime sent = DateTime.now();
+      String stamp = sent.toIso8601String();
+      double timeTaken =
+          (sent.millisecondsSinceEpoch - start.millisecondsSinceEpoch) / 1000;
+
+      print(
+          '[$stamp]: ${req.method.name} ${_res.statusCode} ${req.uri.toString()} took ${timeTaken} sec.');
     });
 
-    return new Future.value(this.next);
+    return Future.value(this.next);
   }
 }
 
@@ -25,15 +27,16 @@ class WebsocketMiddleware extends Middleware {
   WebsocketMiddleware(this.baseUrl);
 
   @override
-  Future<Middleware> run(Request req, Response res, {String baseUrl = '/'}) async {
+  Future<Middleware> run(Request req, Response res,
+      {String baseUrl = '/'}) async {
     if (req.path == baseUrl) {
       print('Upgrading to a websocket...');
       WebSocket ws = await req.upgrade();
-      
+
       ws.listen((data) {
         print(data);
         ws.add('test');
-        new Timer(new Duration(seconds: 3), () {
+        Timer(Duration(seconds: 3), () {
           ws.add('More test');
         });
       });
@@ -46,11 +49,11 @@ class WebsocketMiddleware extends Middleware {
 }
 
 main() async {
-  Pneuma srv = new Pneuma();
+  Pneuma srv = Pneuma();
 
   srv
-    ..use(new WebsocketMiddleware('/ws'))
-    ..use(new LogMiddleware())
+    ..use(WebsocketMiddleware('/ws'))
+    ..use(LogMiddleware())
     ..get('/', (req, res, next) {
       res.send('''
 <!doctype>
