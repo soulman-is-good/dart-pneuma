@@ -78,8 +78,8 @@ class LogMiddleware extends Middleware {
 }
 
 void main() {
-  Pneuma app = new Pneuma()
-    ..use(new LogMiddleware())
+  Pneuma app = Pneuma()
+    ..use(LogMiddleware())
     ..get('/user', (req, res, next) {
       res.send('Hello user');
     });
