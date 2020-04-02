@@ -31,6 +31,9 @@ import 'types.dart';
 abstract class Controller extends Middleware {
   Map<RegExp, Map<RequestMethod, Function>> get routeMap;
 
+  Future<bool> beforeAction(Function action) => Future.value(true);
+  void afterAction() {}
+
   @override
   Future<Middleware> run(Request req, Response res,
       {String baseUrl = '/'}) async {
@@ -52,7 +55,13 @@ abstract class Controller extends Middleware {
         final indexes = List<int>.generate(groupCount, (int i) => i + 1);
 
         hasMatch = true;
-        await Function.apply(action, [req, res]..addAll(match.groups(indexes)));
+        bool canExecute = await beforeAction(action);
+
+        if (canExecute) {
+          await Function.apply(action, [req, res]..addAll(match.groups(indexes)));
+          afterAction();
+        }
+
         break;
       }
     }
