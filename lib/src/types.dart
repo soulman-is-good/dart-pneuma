@@ -4,12 +4,15 @@
 
 library pneuma.types;
 
+import 'dart:async';
+
 import 'request.dart';
 import 'response.dart';
 
 typedef WaterfallHandler = void Function([Exception error]);
 typedef MiddlewareHandler = void Function(
     Request req, Response res, WaterfallHandler next);
+typedef Future ActionHandler(Request req, Response res, [List<String> matches]);
 
 class RequestMethod {
   final String name;

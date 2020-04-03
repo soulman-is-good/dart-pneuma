@@ -1,9 +1,9 @@
 name: pneuma
-version: 0.5.1
+version: 0.6.0
 description: Yet another web server framework on middlewares. Driven by ExpressJs and MVC nostalgy.
 author: Maxim Savin <i@soulman.kz>
 homepage: https://github.com/soulman-is-good/dart-pneuma
 dependencies:
   http_server: ">=0.9.8 <1.0.0"
 environment:
-  sdk: '>=2.0.0 <3.0.0'
+  sdk: '>=2.6.1 <3.0.0'

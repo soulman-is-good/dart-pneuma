@@ -29,10 +29,10 @@ import 'types.dart';
 /// }
 /// ```
 abstract class Controller extends Middleware {
-  Map<RegExp, Map<RequestMethod, Function>> get routeMap;
+  Map<RegExp, Map<RequestMethod, ActionHandler>> get routeMap;
 
-  Future<bool> beforeAction(Function action) => Future.value(true);
-  void afterAction() {}
+  Future<bool> beforeAction(ActionHandler action, Request req, Response res) => Future.value(true);
+  void afterAction(Request req, Response res) {}
 
   @override
   Future<Middleware> run(Request req, Response res,
@@ -48,18 +48,18 @@ abstract class Controller extends Middleware {
     for (RegExp route in routeMap.keys) {
       Match match = route.firstMatch(url);
       int groupCount = match?.groupCount;
-      Map<RequestMethod, Function> actions = routeMap[route];
+      Map<RequestMethod, ActionHandler> actions = routeMap[route];
 
       if (groupCount != null && actions.containsKey(req.method)) {
         final action = actions[req.method];
         final indexes = List<int>.generate(groupCount, (int i) => i + 1);
 
         hasMatch = true;
-        bool canExecute = await beforeAction(action);
+        bool canExecute = await beforeAction(action, req, res);
 
         if (canExecute) {
-          await Function.apply(action, [req, res]..addAll(match.groups(indexes)));
-          afterAction();
+          await action(req, res, match.groups(indexes));
+          afterAction(req, res);
         }
 
         break;

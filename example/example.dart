@@ -55,19 +55,35 @@ class TestController extends Controller {
         }
       };
 
-  void indexAction(Request req, Response res) {
+  Future<bool> beforeAction(ActionHandler action, Request req, Response res) async {
+    if (action == indexAction) {
+      // E.g. check authorization etc
+      res.status(403).send('Unauthorized');
+
+      // after returning false, original action and `afterAction` will not be called
+      return false;
+    }
+
+    return true;
+  }
+
+  void afterAction(Request req, Response res) {
+    print('That was ${req.uri.toString()} with status ${res.statusCode}');
+  }
+
+  Future indexAction(Request req, Response res) async {
     res.send('Index Page');
   }
 
-  void paramsAction(Request req, Response res, String index, String other) {
-    res.send('Index: $index, and $other');
+  Future paramsAction(Request req, Response res, List<String> matches) async {
+    res.send('Index: ${matches[0]}, and ${matches[1]}');
   }
 
   Future timeoutAction(Request req, Response res) async {
     await Future.delayed(Duration(seconds: 10));
   }
 
-  void errorAction(Request req, Response res) {
+  Future errorAction(Request req, Response res) {
     throw Exception('Oops controller');
   }
 }
