@@ -9,10 +9,9 @@ import 'dart:async';
 import 'request.dart';
 import 'response.dart';
 
-typedef WaterfallHandler = void Function([Exception error]);
-typedef MiddlewareHandler = void Function(
-    Request req, Response res, WaterfallHandler next);
-typedef Future ActionHandler(Request req, Response res, [List<String> matches]);
+typedef WaterfallHandler = void Function([Exception]);
+typedef MiddlewareHandler = void Function(Request, Response, WaterfallHandler);
+typedef ActionHandler = Future<void> Function(Request, Response, [List<String>]);
 
 class RequestMethod {
   final String name;

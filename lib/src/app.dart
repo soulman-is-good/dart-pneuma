@@ -101,6 +101,7 @@ class Pneuma {
     }
     try {
       await _server.close(force: force);
+      _setStatus(ServerStatus.STOPPED);
     } on Exception catch (err) {
       _setStatus(ServerStatus.ERROR);
 
